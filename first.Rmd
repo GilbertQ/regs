@@ -3,7 +3,12 @@ title: "Regression and Correlation"
 author: "GilbertQ"
 date: "`r Sys.Date()`"
 output: html_document
----
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+    encoding = encoding,
+    output_file = file.path(dirname(input_file), out_dir, 'index.html'))})
+---  
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -11,21 +16,40 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This is the content of the 10th chapter of the book:
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-employees<-read.csv("/home/matabell/Downloads/hfda_ch10_employees.csv", header=TRUE)
+```{r employees}
+employees<-read.csv("hfda_ch10_employees.csv", header=TRUE)
 head(employees,n=10)
+```
+
+Here is the Summary:
+
+```{r thesumm}
+summary(employees)
 ```
 
 ## Including Plots
 
-You can also embed plots, for example:
+and here is the Plot for the employees that negotiatied:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r theplot}
+plot(employees$requested[employees$negotiated==TRUE],employees$received[employees$negotiated==TRUE])
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+And the Correlation factor:
+
+```{r thecor}
+cor(employees$requested[employees$negotiated==TRUE],employees$received[employees$negotiated==TRUE])
+```
+Finally, here is the trend line:
+```{r theline}
+library(ggplot2)
+data <- data.frame(x = employees$requested[employees$negotiated==TRUE], y = employees$received[employees$negotiated==TRUE])
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +  # Add scatterplot points
+  geom_smooth(method = "lm", col = "blue") +  # Add linear trend line
+  ggtitle("Scatterplot with Trend Line") +
+  xlab("X-axis") +
+  ylab("Y-axis")
+```
